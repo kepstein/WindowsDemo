@@ -10,14 +10,25 @@ jobs:
         uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
-          filename: 'release.zip'
+          filename: 'release-${{github.run_number}}.zip'
           exclusions: '*.git* /*node_modules/* .editorconfig'
-      - name: Upload S3
-        uses: shallwefootball/s3-upload-action@master
-        with:
-          aws_key_id: ${{ secrets.AWS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: ${{ secrets.AWS_BUCKET }}
-          source_dir: 'dirname'
+      # - name: Upload S3
+      #   uses: shallwefootball/s3-upload-action@master
+      #   with:
+      #     aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+      #     aws_bucket: ${{ secrets.AWS_BUCKET }}
+      #     source_dir: 'dirname'
+      - name: Upload file to bucket
+        uses: a-sync/s3-uploader@master
+        # with:
+        #   args: --acl public-read
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-west-2
+          S3_BUCKET: ${{ secrets.AWS_BUCKET }}
+          S3_KEY: ${{ secrets.S3_KEY }}
+          FILE: release-${{github.run_number}}.zip
 
      
