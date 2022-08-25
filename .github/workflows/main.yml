@@ -6,11 +6,15 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
       - name: zip
         uses: thedoctor0/zip-release@main
         with:
           type: 'zip'
-          filename: 'release-${{github.run_number}}.zip'
+          filename: 'release-${{ steps.extract_branch.outputs.branch }}-${{github.run_number}}.zip'
           exclusions: '*.git* /*node_modules/* .editorconfig'
       # - name: Upload S3
       #   uses: shallwefootball/s3-upload-action@master
@@ -29,6 +33,6 @@ jobs:
           AWS_REGION: us-west-2
           S3_BUCKET: ${{ secrets.AWS_BUCKET }}
           S3_KEY: ${{ secrets.S3_KEY }}
-          FILE: release-${{github.run_number}}.zip
+          FILE: release-${{ steps.extract_branch.outputs.branch }}-${{github.run_number}}.zip
 
      
